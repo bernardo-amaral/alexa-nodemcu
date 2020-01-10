@@ -43,7 +43,7 @@ app.post('/api/create', (req, res) => {
         try {
             await db.collection('devices')
                 .doc('/' + req.body.name + '/')
-                .create({ 
+                .create({
                     on: false,
                     updated: (new Date()).toString()
                 });
@@ -60,11 +60,9 @@ app.put('/api/update/:device_name/:device_state', (req, res) => {
         try {
             const document = db.collection('devices')
                 .doc(req.params.device_name);
-            await document.update({
-                on: Boolean(+req.params.device_state),
-                updated: (new Date()).toString()
-            });
-            return res.status(200).send();
+            let item = await document.get();
+            let response = item.data();
+            return res.status(200).send(response);
         } catch (error) {
             console.log(error);
             return res.status(500).send(error);
@@ -86,8 +84,18 @@ app.delete('/api/delete/:device_name', (req, res) => {
     })();
 });
 
-app.get('/hello-world', (req, res) => {
-    return res.status(200).send('Hello World!');
+app.get('/api/device/:device_name', (req, res) => {
+    (async () => {
+        try {
+            const document = db.collection('devices')
+                .doc(req.params.device_name);
+            await document.delete();
+            return res.status(200).send();
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send(error);
+        }
+    })();
 });
 
 exports.app = functions.https.onRequest(app);
