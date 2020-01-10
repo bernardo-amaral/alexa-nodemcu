@@ -14,7 +14,7 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
-app.get('/api/read', (req, res) => {
+app.get('/api/devices', (req, res) => {
     (async () => {
         try {
             let query = db.collection('devices');
@@ -60,9 +60,11 @@ app.put('/api/update/:device_name/:device_state', (req, res) => {
         try {
             const document = db.collection('devices')
                 .doc(req.params.device_name);
-            let item = await document.get();
-            let response = item.data();
-            return res.status(200).send(response);
+            await document.update({
+                on: Boolean(Number(req.params.device_state)),
+                updated: (new Date()).toString()
+            });
+            return res.status(200).send();
         } catch (error) {
             console.log(error);
             return res.status(500).send(error);
@@ -89,8 +91,9 @@ app.get('/api/device/:device_name', (req, res) => {
         try {
             const document = db.collection('devices')
                 .doc(req.params.device_name);
-            await document.delete();
-            return res.status(200).send();
+            let item = await document.get();
+            let response = item.data();
+            return res.status(200).send(response);
         } catch (error) {
             console.log(error);
             return res.status(500).send(error);
