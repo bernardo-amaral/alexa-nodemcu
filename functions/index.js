@@ -14,6 +14,17 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+app.get('/', (req, res) => {
+    (async () => {
+        try {
+            return res.status(200).send(['OK']);
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send(error);
+        }
+    })();
+});
+
 app.get('/api/devices', (req, res) => {
     (async () => {
         try {
