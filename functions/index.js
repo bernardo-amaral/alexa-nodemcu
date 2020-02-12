@@ -97,6 +97,20 @@ app.delete('/api/delete/:device_name', (req, res) => {
     })();
 });
 
+app.put('/api/rename/:deviceId/:deviceNewId', (req, res) => {
+    (async () => {
+            const document = db;
+            await document.collection('devices')
+                .doc(req.params.deviceId).get().then(function(doc) {
+                    let data = doc.data();
+                    document.collection('devices').doc(req.params.deviceId)
+                })
+            });
+       
+        
+    })();
+});
+
 app.get('/api/device/:device_name', (req, res) => {
     (async () => {
         try {

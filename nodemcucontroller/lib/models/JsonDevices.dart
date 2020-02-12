@@ -12,3 +12,15 @@ Future<List> fetchAllDevices() async {
     throw Exception("Failed to fetch data");
   }
 }
+
+Future<bool> renameDevice(String deviceId, String deviceNewId) async {
+  print(deviceId);
+  print(deviceNewId);
+  String uri = "https://us-central1-fir-api-2ab96.cloudfunctions.net/app/api/rename/${deviceId}/${deviceNewId}";
+  var response = await http.put(uri);
+
+  if (response.statusCode == 200) {
+    return true;
+  }
+  return false;
+}

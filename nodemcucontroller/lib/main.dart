@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nodemcucontroller/components/textfield_alertDialog.dart';
 import 'package:nodemcucontroller/models/JsonDevices.dart';
 
 void main() => runApp(MyApp());
@@ -29,6 +30,10 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   bool isLoading = false;
+
+  void renameDevice(BuildContext context, String deviceId) {
+    displayDialog(context, deviceId);
+  }
 
   void turnOn(String deviceId) async {
     await Firestore.instance
@@ -87,6 +92,11 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             trailing: Icon(Icons.power,
                 color: device['on'] ? Colors.green : Colors.red, size: 30.0),
+            onLongPress: () {
+              setState(() {
+                renameDevice(context, device['id']);
+              });
+            },    
             onTap: () {
               setState(() {
                 if (device['on']) {
