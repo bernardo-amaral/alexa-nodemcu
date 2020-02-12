@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_database/firebase_database.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 void main() => runApp(MyApp());
 
@@ -26,13 +26,20 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final databaseReference =
-      FirebaseDatabase.instance.reference().child('devices');
+  void turnOn() async {
+    await Firestore.instance
+        .collection('devices')
+        .document('ventilador')
+        .setData({ 'on': true, "updated": (new DateTime.now())}).then((_) {
+      print('Transaction  committed.');
+    });
+  }
 
-  void saveRecord() async {
-    await databaseReference
-        .push()
-        .set(<String, String>{"id": "ventilador", "on": "true"}).then((_) {
+    void turnOff() async {
+    await Firestore.instance
+        .collection('devices')
+        .document('ventilador')
+        .setData({ 'on': false, "updated": (new DateTime.now())}).then((_) {
       print('Transaction  committed.');
     });
   }
@@ -48,9 +55,15 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             RaisedButton(
-              child: Text('Create Record'),
+              child: Text('Turn on device'),
               onPressed: () {
-                saveRecord();
+                turnOn();
+              },
+            ),
+            RaisedButton(
+              child: Text('Turn off device'),
+              onPressed: () {
+                turnOff();
               },
             ),
           ],
