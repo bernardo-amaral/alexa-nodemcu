@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:nodemcucontroller/models/JsonDevices.dart';
 
 void main() => runApp(MyApp());
 
@@ -8,11 +9,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'NodeMCU',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Flutter Demo Home Page'),
+      home: MyHomePage(title: 'Home Automation'),
     );
   }
 }
@@ -26,22 +28,74 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  void turnOn() async {
+  bool isLoading = false;
+
+  void turnOn(String deviceId) async {
     await Firestore.instance
         .collection('devices')
-        .document('ventilador')
-        .setData({ 'on': true, "updated": (new DateTime.now())}).then((_) {
-      print('Transaction  committed.');
+        .document(deviceId)
+        .setData({'on': true, "updated": (new DateTime.now())}).then((_) {
+      print('Device ${deviceId} turned on..');
     });
   }
 
-    void turnOff() async {
+  void turnOff(String deviceId) async {
     await Firestore.instance
         .collection('devices')
-        .document('ventilador')
-        .setData({ 'on': false, "updated": (new DateTime.now())}).then((_) {
-      print('Transaction  committed.');
+        .document(deviceId)
+        .setData({'on': false, "updated": (new DateTime.now())}).then((_) {
+      print('Device ${deviceId} turned off..');
     });
+  }
+
+  Widget devicesList() {
+    return FutureBuilder<List>(
+      future: fetchAllDevices(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData || isLoading)
+          return Center(child: CircularProgressIndicator());
+
+        return ListView(
+          children: snapshot.data
+              .map((device) {
+                return deviceRow(device);
+              })
+              .where((w) => w != null)
+              .toList(),
+        );
+      },
+    );
+  }
+
+  Widget deviceRow(device) {
+    if (device['on'] == null) {
+      device['on'] = false;
+    }
+    return Card(
+        color: Colors.white,
+        elevation: 8.0,
+        margin: new EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+        child: ListTile(
+            contentPadding:
+                EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
+            title: Text(
+              device['id'],
+              style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold),
+            ),
+            trailing: Icon(Icons.power,
+                color: device['on'] ? Colors.green : Colors.red, size: 30.0),
+            onTap: () {
+              setState(() {
+                if (device['on']) {
+                  turnOff(device['id']);
+                } else {
+                  turnOn(device['id']);
+                }
+              });
+            }));
   }
 
   @override
@@ -50,24 +104,26 @@ class _MyHomePageState extends State<MyHomePage> {
       appBar: AppBar(
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            RaisedButton(
-              child: Text('Turn on device'),
-              onPressed: () {
-                turnOn();
-              },
+      body: Column(
+        children: <Widget>[
+           Padding(
+            padding: const EdgeInsets.all(15.0),
+            child: Align(
+                alignment: Alignment.centerRight,
+                child: IconButton(
+                  icon: Icon(Icons.refresh), 
+                  onPressed: () {
+                    setState(() {
+                      return null;
+                    });
+                  },
+                ),                
             ),
-            RaisedButton(
-              child: Text('Turn off device'),
-              onPressed: () {
-                turnOff();
-              },
-            ),
-          ],
-        ),
+          ),
+          Expanded(
+            child: devicesList(),
+          )
+        ],
       ),
     );
   }
