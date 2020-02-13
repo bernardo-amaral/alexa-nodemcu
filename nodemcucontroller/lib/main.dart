@@ -31,8 +31,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool isLoading = false;
 
-  void renameDevice(BuildContext context, String deviceId) {
-    displayDialog(context, deviceId);
+  Future<bool> renameDevice(BuildContext context, String deviceId) {
+    return displayDialog(context, deviceId);
   }
 
   void turnOn(String deviceId) async {
@@ -92,11 +92,13 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             trailing: Icon(Icons.power,
                 color: device['on'] ? Colors.green : Colors.red, size: 30.0),
-            onLongPress: () {
-              setState(() {
-                renameDevice(context, device['id']);
-              });
-            },    
+            onLongPress: () async {
+              if (await renameDevice(context, device['id'])) {
+                setState(() {
+                  return null;
+                });
+              }
+            },
             onTap: () {
               setState(() {
                 if (device['on']) {
@@ -116,18 +118,18 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: Column(
         children: <Widget>[
-           Padding(
+          Padding(
             padding: const EdgeInsets.all(15.0),
             child: Align(
-                alignment: Alignment.centerRight,
-                child: IconButton(
-                  icon: Icon(Icons.refresh), 
-                  onPressed: () {
-                    setState(() {
-                      return null;
-                    });
-                  },
-                ),                
+              alignment: Alignment.centerRight,
+              child: IconButton(
+                icon: Icon(Icons.refresh),
+                onPressed: () {
+                  setState(() {
+                    return null;
+                  });
+                },
+              ),
             ),
           ),
           Expanded(
