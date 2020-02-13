@@ -99,15 +99,20 @@ app.delete('/api/delete/:device_name', (req, res) => {
 
 app.put('/api/rename/:deviceId/:deviceNewId', (req, res) => {
     (async () => {
-            const document = db;
-            await document.collection('devices')
-                .doc(req.params.deviceId).get().then(function(doc) {
-                    let data = doc.data();
-                    document.collection('devices').doc(req.params.deviceId)
-                })
-            });
-       
-        
+        try {
+            const devicesCollection = db.collection('devices');
+
+            let oldDocument = await devicesCollection.doc(req.params.deviceId).get();
+            if (oldDocument && oldDocument.exists) {
+                const oldDocumentData = oldDocument.data();
+                await devicesCollection.doc(req.params.deviceNewId).set(oldDocumentData);
+                await devicesCollection.doc(req.params.deviceId).delete();
+                return res.status(200).send({success: true});
+            }
+        } catch (error) {
+            console.log(error);
+            return res.status(500).send(error);
+        }
     })();
 });
 
