@@ -6,12 +6,12 @@
 
 ESP8266WiFiMulti WiFiMulti;
 const String baseUrl = "http://us-central1-fir-api-2ab96.cloudfunctions.net/app/api";
+String macAddress = "";
 
 void setup() {
-
   Serial.begin(115200);
   Serial.setDebugOutput(true);
-
+  
   for (uint8_t t = 4; t > 0; t--) {
     Serial.printf("[SETUP] WAIT %d...\n", t);
     Serial.flush();
@@ -25,23 +25,26 @@ void setup() {
 void loop() {
   // wait for WiFi connection
   if ((WiFiMulti.run() == WL_CONNECTED)) {
+    macAddress = WiFi.macAddress();
     Serial.println("");
     Serial.println("WiFi conectado");
     Serial.println("Endereco IP : ");
     Serial.println(WiFi.localIP());
+    Serial.print("MAC: ");
+    Serial.println(macAddress);
 
     HTTPClient https;
 
-    char* endPoint = "/device/ilumina%C3%A7%C3%A3o%20da%20sala";
+    char* endPoint = "/device/";
 
     Serial.print("[HTTP] begin...\n");
-    if (https.begin(baseUrl + endPoint)) {
+    if (https.begin(baseUrl + endPoint + macAddress)) {
       https.addHeader("Content-Type", "application/json");
 
       char message[40];
-      sprintf(message, "[HTTP] GET... %s\n", endPoint);
+      sprintf(message, "[HTTP] GET... %s", endPoint);
 
-      Serial.print(message);
+      Serial.println(message + macAddress);
       int httpCode = https.GET();
 
       if (httpCode > 0) {
