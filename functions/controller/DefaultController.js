@@ -1,4 +1,11 @@
+const serviceAccount = require("../permissions.json");
 const admin = require('firebase-admin');
+
+admin.initializeApp({
+    credential: admin.credential.cert(serviceAccount),
+    databaseURL: process.env.DB_HOST
+});
+
 const db = admin.firestore();
 
 const CreateDeviceOperation = require("../operations/CreateDeviceOperation");

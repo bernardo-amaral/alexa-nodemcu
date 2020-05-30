@@ -14,6 +14,9 @@ In application root directory input:
 
 on /functions dir tip:
 
+###### https://firebase.google.com/docs/web/setup?hl=pt-br
+
 ```shell
+npm install -g firebase-tools
 firebase deploy
 ```
