@@ -5,6 +5,8 @@ const cors = require('cors');
 const app = express();
 const serviceAccount = require("./permissions.json");
 
+const DefaultController = require('./controller/DefaultController');
+
 app.use(cors({ origin: true }));
 
 admin.initializeApp({
@@ -42,23 +44,6 @@ app.get('/api/devices', (req, res) => {
                 }
                 return res.status(200).send(response);
             });
-        } catch (error) {
-            console.log(error);
-            return res.status(500).send(error);
-        }
-    })();
-});
-
-app.post('/api/create', (req, res) => {
-    (async () => {
-        try {
-            await db.collection('devices')
-                .doc('/' + req.body.name + '/')
-                .create({
-                    on: false,
-                    updated: (new Date()).toString()
-                });
-            return res.status(200).send();
         } catch (error) {
             console.log(error);
             return res.status(500).send(error);
@@ -107,7 +92,7 @@ app.put('/api/rename/:deviceId/:deviceNewId', (req, res) => {
                 const oldDocumentData = oldDocument.data();
                 await devicesCollection.doc(req.params.deviceNewId).set(oldDocumentData);
                 await devicesCollection.doc(req.params.deviceId).delete();
-                return res.status(200).send({success: true});
+                return res.status(200).send({ success: true });
             }
         } catch (error) {
             console.log(error);
@@ -116,19 +101,10 @@ app.put('/api/rename/:deviceId/:deviceNewId', (req, res) => {
     })();
 });
 
-app.get('/api/device/:device_name', (req, res) => {
-    (async () => {
-        try {
-            const document = db.collection('devices')
-                .doc(req.params.device_name);
-            let item = await document.get();
-            let response = item.data();
-            return res.status(200).send(response);
-        } catch (error) {
-            console.log(error);
-            return res.status(500).send(error);
-        }
-    })();
-});
+app.route('/api/device')
+    .post(DefaultController.createDevice);
+
+app.route('/api/device/:device_mac')
+    .get(DefaultController.getDeviceByMacAddress);
 
 exports.app = functions.https.onRequest(app);

@@ -64,6 +64,9 @@ node_modules/
 # dotenv environment variables file
 .env
 
+
 functions/node_modules/
 functions/permissions.json
 functions/.env
+.vscode
+.vscode/
