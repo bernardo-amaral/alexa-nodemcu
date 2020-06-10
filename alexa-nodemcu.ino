@@ -3,7 +3,7 @@
 #include "fauxmoESP.h"
  
 #define WIFI_SSID "NightShade 2.4G"
-#define WIFI_PASS "*****"
+#define WIFI_PASS "****"
 #define SERIAL_BAUDRATE 115200
  
 fauxmoESP fauxmo;
@@ -22,20 +22,35 @@ void wifiSetup() {
 }
 
 void devicesSetup() {
-  fauxmo.addDevice("Lâmpada quarto");
-  fauxmo.addDevice("Lâmpada sala");
+  fauxmo.addDevice("Luz quarto");
+  fauxmo.addDevice("Luz escritório");
   fauxmo.setPort(80); 
   fauxmo.enable(true);
   fauxmo.onSetState([](unsigned char device_id, const char * device_name, bool state, unsigned char value) {
     Serial.printf("[MAIN] Device #%d (%s) state: %s value: %d\n", device_id, device_name, state ? "ON" : "OFF", value);
+    
+    boolean device_state = (state) ? HIGH : LOW;
+    
+    if (device_id == 0) {
+      digitalWrite(D3, device_state);
+    }
+    if (device_id == 1) {
+      digitalWrite(D4, device_state);
+    }    
   }); 
+}
+
+void pinsSetup() {
+  pinMode(D3, OUTPUT);
+  pinMode(D4, OUTPUT);
 }
  
 void setup() {
   Serial.begin(SERIAL_BAUDRATE);
   Serial.println("FauxMo demo sketch");
   Serial.println("After connection, ask Alexa/Echo to 'turn <devicename> on' or 'off'");
- 
+
+  pinsSetup();
   wifiSetup();
   devicesSetup();
 }
