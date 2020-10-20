@@ -1,22 +1,16 @@
-# NodeMCU Firebase API
+# Communication Between NodeMCU & Alexa
 
 
+## Requisites:
 
-## How to run:
+- fauxmoESP 3.1.1 (tested in Amazon Echo g3)
 
-In application root directory input:
+- ESP8266WiFi
 
-- cd /functions
+## Install Libraries
 
-- npm install
+#### First you need to install the Fauxmo library, click in: Tools -> Library Manager (or ctrl+shift+I), search for "fauxmoesp" and check for install it.
+![title](Images/fauxmo.png)
 
-## How to Publish:
-
-on /functions dir tip:
-
-###### https://firebase.google.com/docs/web/setup?hl=pt-br
-
-```shell
-npm install -g firebase-tools
-firebase deploy
-```
+#### After Fauxmo, you need to install ESP8266 lib, i use the Adafruit version, It's the same step, search for "esp8266" in search field.
+![title](Images/esp8266.png)
