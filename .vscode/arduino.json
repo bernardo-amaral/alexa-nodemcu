@@ -1,4 +1,0 @@
-{
-    "board": "arduino:avr:unowifi",
-    "sketch": "alexa-nodemcu.ino"
-}
