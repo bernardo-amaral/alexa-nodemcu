@@ -3,7 +3,7 @@
 
 ## Requisites:
 
-- [fauxmoESP 3.1.1 (tested in Amazon Echo g3)](https://github.com/simap/fauxmoesp)
+- [fauxmoESP 3.1.1 (tested in Amazon Echo g3)](https://github.com/vintlabs/fauxmoESP)
 
 - ESP8266WiFi
 
