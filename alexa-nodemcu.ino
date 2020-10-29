@@ -1,9 +1,8 @@
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include "fauxmoESP.h"
- 
-#define WIFI_SSID "NightShade 2.4G"
-#define WIFI_PASS "****"
+#include "credentials.h"
+
 #define SERIAL_BAUDRATE 115200
  
 fauxmoESP fauxmo;
